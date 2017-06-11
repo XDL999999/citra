@@ -158,11 +158,9 @@ endif()
 find_package(Boost 1.63.0 QUIET)
 if (NOT Boost_FOUND)
     message(STATUS "Boost 1.63.0 or newer not found, falling back to externals")
-
-    set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/externals/boost")
-    set(Boost_NO_SYSTEM_PATHS OFF)
-    find_package(Boost QUIET REQUIRED)
+    set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost")
 endif()
+include_directories(${Boost_INCLUDE_DIR})
 
 # Prefer the -pthread flag on Linux.
 set(THREADS_PREFER_PTHREAD_FLAG ON)
