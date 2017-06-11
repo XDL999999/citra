@@ -1,4 +1,4 @@
-// Copyright 2014 Citra Emulator Project
+// Copyright 2017 Citra Emulator Project
 // Licensed under GPLv2 or any later version
 // Refer to the license.txt file included.
 
@@ -8,8 +8,10 @@
 #include "common/string_util.h"
 #include "core/hle/kernel/process.h"
 #include "core/loader/3dsx.h"
+#include "core/loader/cia.h"
 #include "core/loader/elf.h"
 #include "core/loader/ncch.h"
+#include "core/loader/ncsd.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,6 +34,8 @@ FileType IdentifyFile(FileUtil::IOFile& file) {
     CHECK_TYPE(THREEDSX)
     CHECK_TYPE(ELF)
     CHECK_TYPE(NCCH)
+    CHECK_TYPE(NCSD)
+    CHECK_TYPE(CIA)
 
 #undef CHECK_TYPE
 
@@ -110,10 +114,17 @@ static std::unique_ptr<AppLoader> GetFileLoader(FileUtil::IOFile&& file, FileTyp
     case FileType::ELF:
         return std::make_unique<AppLoader_ELF>(std::move(file), filename);
 
-    // NCCH/NCSD container formats.
+    // NCCH container format.
     case FileType::CXI:
-    case FileType::CCI:
         return std::make_unique<AppLoader_NCCH>(std::move(file), filepath);
+
+    // NCSD container format.
+    case FileType::CCI:
+        return std::make_unique<AppLoader_NCSD>(std::move(file), filepath);
+
+    // CIA container format.
+    case FileType::CIA:
+        return std::make_unique<AppLoader_CIA>(std::move(file), filepath);
 
     default:
         return nullptr;
